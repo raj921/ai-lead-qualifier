@@ -1,0 +1,166 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "send-outreach",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -192,
+        -48
+      ],
+      "id": "4036b4e5-fdf9-4b88-8572-a870e84de7b0",
+      "name": "Webhook",
+      "webhookId": "c1fb73f9-9183-4521-bfad-9b765d931388"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{$json[\"body\"][\"lead_id\"]}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -48
+      ],
+      "id": "332550fc-7556-4d46-8107-7a35862d850b",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "TD9ehCUpYpCobiIL",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro-preview-03-25",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro-preview-03-25"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a concise and friendly SDR. Your task is to write a 90-120 word first-touch email to a new lead.\n\nUse the following information about the lead:\n- Name: {{$node[\"Get many rows\"].json[0][\"name\"]}}\n- Their Problem: {{$node[\"Get many rows\"].json[0][\"problem_text\"]}}\n\nInstructions:\n- Personalize the email by referencing their specific problem.\n- Keep the tone friendly, crisp, and professional.\n- End with a single, clear call to action, like asking for a 15-min call.\n- Return ONLY the email body as plain text."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -48
+      ],
+      "id": "aa1fa8dc-cd33-436c-8249-1aa4f4835e97",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "nH5kK1yiAsgevuxl",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{$node[\"Webhook\"].json[\"lead_id\"]}}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "outreach_sent"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -48
+      ],
+      "id": "ebc356a7-12cd-47cb-866a-cfb6531cddd3",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "TD9ehCUpYpCobiIL",
+          "name": "Supabase account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "376d652d-6a17-40ac-941f-fc363d843cb3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "651a189859a98e65dd8e0eab468af1a18080c4032f88c0de504844cfbd2a6e53"
+  },
+  "id": "N9oiVXPxxFDNNrdY",
+  "tags": []
+}
