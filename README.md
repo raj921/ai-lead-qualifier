@@ -1,123 +1,160 @@
-AI Lead Qualifier & Outreach Micro-App
-This project is a complete, full-stack application designed to automatically capture, score, and manage new business leads. It uses a modern stack including a web-based frontend, a powerful automation backend, AI for intelligent analysis, and a robust database.
+# AI Lead Qualifier & Outreach Micro-App
 
-The system features a public-facing lead capture form and a private admin dashboard to review, filter, and initiate outreach for the leads that have been scored by the AI.
+A **full-stack application** that automatically captures, scores, and manages new business leads.  
+It combines a modern **frontend**, **workflow automation backend**, **AI-powered lead analysis**, and a **robust database** to streamline lead qualification and outreach.
 
-Core Technologies
-Frontend: Lovable (Public Website + Admin Dashboard)
+---
 
-Automation Backend: n8n (Workflow Automation)
+## 🚀 Features
+- **Public Lead Capture Form** – Collect lead details from potential clients.  
+- **AI Lead Scoring & Classification** – Uses **Google Gemini** to enrich and prioritize leads.  
+- **Admin Dashboard** – Review, filter, and initiate outreach for qualified leads.  
+- **Automated Outreach** – Drafts personalized emails.  
+- **Database Integration** – Stores leads and events in **Supabase Postgres**.  
 
-AI Model: Google Gemini (Lead Scoring, Classification & Email Drafting)
+---
 
-Database: Supabase (Postgres Database)
+## 🛠️ Tech Stack
+- **Frontend**: [Lovable](https://lovable.dev) (Public Website + Admin Dashboard)  
+- **Automation Backend**: [n8n](https://n8n.io) (Workflow Automation)  
+- **AI Model**: [Google Gemini](https://ai.google.dev/) (Scoring, Classification & Drafting)  
+- **Database**: [Supabase](https://supabase.com) (Postgres Database)  
 
-Live Demo & Repositories
-Live App URL: [INSERT YOUR LIVE LOVABLE APP URL HERE]
+---
 
-Demo Video (Loom): [INSERT YOUR LOOM VIDEO URL HERE]
+## 📺 Demo & Repositories
+- **Live App**: [INSERT YOUR LIVE LOVABLE APP URL HERE]  
+- **Demo Video (Loom)**: [INSERT YOUR LOOM VIDEO URL HERE]  
+- **Frontend Repo (Lovable)**: [INSERT GITHUB REPO LINK FOR YOUR LOVABLE PROJECT]  
+- **Automation & SQL Repo**: [INSERT GITHUB REPO LINK FOR YOUR PROJECT FILES]  
 
-Frontend Repo (Lovable): [INSERT GITHUB REPO LINK FOR YOUR LOVABLE PROJECT]
+---
 
-Project Files Repo (n8n, SQL): [INSERT GITHUB REPO LINK FOR YOUR PROJECT FILES]
-
-Architecture Overview
-The application follows a modern, decoupled architecture where the frontend, backend automation, and database operate as independent services.
+## 🏗️ Architecture
 
 [Lovable Frontend] ---> [n8n Webhook] ---> [Google Gemini AI] ---> [Supabase DB]
-      |                                                                 ^
-      |                                                                 |
-      +-----> [Admin Dashboard] ----------------------------------------+
+| ^
+| |
++-----> [Admin Dashboard] ----------------------------------------+
 
-Flow 1: Lead Capture
-A user submits the lead capture form on the public Lovable website.
+markdown
+Copy code
 
-The form data is sent to the "Lead Capture" n8n webhook.
+- **Frontend (Lovable)** handles both public-facing form and private admin dashboard.  
+- **n8n** orchestrates workflows and connects to AI + DB.  
+- **Gemini AI** provides intelligent scoring, classification, and email drafting.  
+- **Supabase** stores all leads, statuses, and events.  
 
-The n8n workflow sends the lead's problem description to the Google Gemini API for scoring and classification.
+---
 
-The complete, enriched lead data is saved to the Supabase Postgres database.
+## 🔄 Flows
 
-Flow 2: Outreach
-An admin reviews a lead in the Lovable admin dashboard and clicks "Send Outreach".
+### 1. Lead Capture
+1. User submits the **lead form** on the website.  
+2. Form data is sent to **Lead Capture Webhook** (n8n).  
+3. n8n sends problem description → **Google Gemini API**.  
+4. Enriched data (score, classification) → stored in **Supabase**.  
 
-The dashboard sends the lead_id to the "Send Outreach" n8n webhook.
+### 2. Outreach
+1. Admin opens the **dashboard**, reviews lead, clicks **Send Outreach**.  
+2. Dashboard sends `lead_id` → **Send Outreach Webhook**.  
+3. n8n fetches lead from **Supabase**.  
+4. **Gemini AI** drafts personalized email.  
+5. Supabase updates lead status → `outreach_sent`.  
 
-The n8n workflow fetches the lead's data from Supabase.
+---
 
-The Google Gemini API drafts a personalized email.
+## ⚙️ Setup Instructions
 
-The lead's status is updated to outreach_sent in the Supabase database.
+### 1. Prerequisites
+- [Supabase](https://supabase.com) account (Free Tier OK)  
+- [n8n](https://n8n.io) account (Cloud or Self-hosted)  
+- [Google AI Studio](https://ai.google.dev/) API Key (Gemini)  
+- [Lovable Project](https://lovable.dev)  
 
-Setup Instructions
-Follow these steps to set up and run the project locally or in a similar cloud environment.
+---
 
-1. Prerequisites
-A Supabase account (free tier is sufficient).
+### 2. Database Setup (Supabase)
+1. Create a **new project** in Supabase.  
+2. Go to **SQL Editor**.  
+3. Copy & run contents of `schema.sql` from this repo.  
+   - Creates tables: `leads`, `lead_events`, etc.  
+   - Adds sample data.  
 
-An n8n account (cloud or self-hosted).
+---
 
-A Google AI Studio account to get a Gemini API key.
+### 3. Automation Setup (n8n)
+1. Login to n8n.  
+2. Create **two workflows**:  
+   - Lead Capture → Import `lead-capture-workflow.json`  
+   - Send Outreach → Import `send-outreach-workflow.json`  
+3. Reconnect credentials for **Supabase** and **Google Gemini** nodes.  
 
-A Lovable project.
+---
 
-2. Set Up the Database (Supabase)
-Create a new project in Supabase.
+### 4. Environment Variables
+Create `.env` file (copy `.env.example`) and set values:
 
-Navigate to the SQL Editor.
+```env
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+GEMINI_API_KEY=your_gemini_api_key
 
-Open the schema.sql file from this repository, copy its contents, and run it in the Supabase SQL Editor. This will create all the necessary tables (leads, lead_events, etc.) and add some sample data.
-
-3. Set Up the Automation (n8n)
-Log in to your n8n instance.
-
-Create two new blank workflows.
-
-For the first workflow, go to File > Import > From File and import the lead-capture-workflow.json file from this repository.
-
-For the second workflow, import the send-outreach-workflow.json file.
-
-For both workflows, you will need to reconnect the credentials for the Supabase and Google Gemini nodes using your own API keys.
-
-4. Configure Environment Variables
-Create a .env file by copying the .env.example file.
-
-Fill in the required values:
-
-Your Supabase Database Connection URL.
-
-Your Google Gemini API Key.
-
-The Production URLs for both of your new n8n webhooks.
-
-5. Connect the Frontend (Lovable)
+N8N_LEAD_CAPTURE_URL=https://your-n8n-webhook-url/lead-capture
+N8N_SEND_OUTREACH_URL=https://your-n8n-webhook-url/send-outreach
+5. Frontend Setup (Lovable)
 Open your Lovable project.
 
-Connect it to your Supabase project using Lovable's native integration.
+Connect it with Supabase via Lovable native integration.
 
-Ensure the public form is configured to send its data to your "Lead Capture" webhook URL.
+Configure:
 
-Ensure the "Send Outreach" button in your admin dashboard is configured to send a POST request with the lead_id to your "Send Outreach" webhook URL.
+Public form → sends data → Lead Capture Webhook.
 
-How to Test
-To test the end-to-end flow of the application:
+Admin “Send Outreach” button → POST request with lead_id → Send Outreach Webhook.
 
-Navigate to your live Lovable website's public form.
+✅ Testing
+Go to your live public form.
 
-Fill in the form fields. For the "Problem" description, use a realistic example to see the AI in action.
+Enter a test lead. Example:
 
-Sample Test Lead (High-Fit)
-Our sales reps are spending over 10 hours a week manually copying and pasting lead data from our marketing forms into the company CRM. This is causing significant delays in follow-up and leads to frequent data errors. We are looking for an automated solution to instantly capture and score new leads to free up our sales team to focus on closing deals.
+vbnet
+Copy code
+Our sales reps spend 10+ hours/week manually copying lead data into CRM. 
+We want automation to capture & score leads instantly.
+Open /admin dashboard → see new lead with Fit Score and Classification.
 
-Submit the form.
+Click Send Outreach → Success notification.
 
-Navigate to your /admin dashboard. You should see the new lead appear in the table with a high "Fit Score" and a "Sales ops" label.
+Verify Supabase: lead status = outreach_sent.
 
-Click on the lead to open the detail view.
+⚠️ Known Limitations
+Email sending is not fully integrated.
 
-Click the "Send Outreach" button. You should see a success notification.
+Currently, only drafts email + updates status.
 
-Check your Supabase leads table. The status for that lead should now be updated to outreach_sent.
+Can add SMTP / SendGrid / SES node in n8n for real sending.
 
-Known Limitations
-Email Sending: The "Send Outreach" workflow currently only drafts the email and updates the lead's status. It does not connect to an SMTP service to actually send the email. This could be added as a future enhancement by adding a "Send Email" node in n8n.
+📌 Roadmap
+ Add real email sending (SMTP or Email API).
+
+ Build analytics dashboard (conversion, trends).
+
+ Extend AI for "Next Best Action" recommendations.
+
+👨‍💻 Author
+Built with ❤️ using Lovable, n8n, Supabase, and Google Gemini.
+
+yaml
+Copy code
+
+---
+
+👉 Do you also want me to **generate and package the `schema.sql`, `lead-capture-workflow.json`, and `send-outreach-workflow.json`** so you’ll have a complete repo (README + DB + workflows) ready to upload to GitHub?
+
+
+
+
+
+
+
